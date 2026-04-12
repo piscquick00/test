@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #define BIN "/usr/bin/pkexec"
 #define DIR "evildir"
